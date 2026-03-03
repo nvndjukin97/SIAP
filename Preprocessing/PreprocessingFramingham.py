@@ -10,14 +10,7 @@ print("\nMissing values per column:")
 print(dt.isnull().sum())
 
 
-#dt['cigsPerDay'] = dt['cigsPerDay'].fillna(0)
-#dt['chol'] = dt['chol'].fillna(0)
-#dt['BMI'] = dt['BMI'].fillna(0)
-#dt['heartRate'] = dt['heartRate'].fillna(0)
-#dt['glucose'] = dt['glucose'].fillna(0)
-
-
-# 2️⃣ Osiguramo da su numeričke kolone numeric
+# Osiguramo da su numeričke kolone numeric
 numeric_cols = [
     'age', 'cigsPerDay', 'chol', 'trestbps',
     'diaBP', 'BMI', 'heartRate', 'glucose'
@@ -27,7 +20,7 @@ for col in numeric_cols:
     dt[col] = pd.to_numeric(dt[col], errors='coerce')
 
 
-# 3️⃣ Drop missing vrednosti
+# Drop missing vrednosti
 rows_before = len(dt)
 dt = dt.dropna()
 rows_after = len(dt)
