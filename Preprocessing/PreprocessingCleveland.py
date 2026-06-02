@@ -1,9 +1,41 @@
 import pandas as pd
 
+# 1) Ucitavanje
 dt = pd.read_csv("../data/Heart_disease_cleveland_new.csv")
+# 2) Setovanje imena kolona
 dt.columns = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach',
        'exang', 'oldpeak', 'slope', 'ca', 'thal', 'target']
 
+# 3) Kolone sa  "?" kao nedostajuca vrednost
+dt = dt.replace("?", pd.NA)
+
+print("=== Missing values BEFORE type fixes ===")
+print(dt.isnull().sum())
+print("Rows:", len(dt))
+
+# 4) Ensure numeric columns are numeric (convert invalid -> NaN)
+#    ca and thal are the usual offenders; we also force all numeric-looking cols.
+numeric_cols = ['age', 'sex', 'trestbps', 'chol', 'fbs', 'thalach', 'exang', 'oldpeak', 'ca', 'thal', 'target']
+for col in numeric_cols:
+    dt[col] = pd.to_numeric(dt[col], errors='coerce')
+
+print("\n=== Missing values AFTER numeric coercion ===")
+print(dt.isnull().sum())
+print("Rows:", len(dt))
+
+# 5) Handle missing values
+# Option A (recommended for Cleveland): drop rows with any missing values
+dt_before = len(dt)
+dt = dt.dropna()
+dt_after = len(dt)
+
+print(f"\nDropped rows due to missing values: {dt_before - dt_after}")
+print("Rows after dropna:", len(dt))
+print("=== Missing values FINAL ===")
+print(dt.isnull().sum())
+
+
+# 6) Konvertovanje kolona u kategoricke
 dt['cp'] = dt['cp'].astype('object')
 dt['restecg'] = dt['restecg'].astype('object')
 dt['slope'] = dt['slope'].astype('object')
@@ -41,3 +73,6 @@ dt['fbs'] = dt.fbs.apply(lambda  x: 'Yes' if x==1 else 'No')
 dt['exang'] = dt.exang.apply(lambda  x: 'Yes' if x==1 else 'No')
 
 dt.to_csv("../data/processed_cleveland.csv", index=False)
+
+print("Final shape:", dt.shape)
+print("Target distribution:\n", dt["target"].value_counts(normalize=True))
